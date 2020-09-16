@@ -1,0 +1,10 @@
+.logoImg > img{
+    padding-left: 20px;
+    padding-right: 50px;
+}
+#basic-navbar-nav{
+    margin-left: 220px;
+}
+.search{
+    height: 30px;
+}
