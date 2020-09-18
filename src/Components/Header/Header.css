@@ -1,3 +1,7 @@
+body{
+    background-color: red;
+}
+
 .logoImg > img{
     padding-left: 20px;
     padding-right: 50px;
@@ -7,4 +11,8 @@
 }
 .search{
     height: 30px;
+}
+.navbar{
+    box-shadow: none;
+    border: none;
 }

@@ -2,10 +2,21 @@ import React, { useState } from 'react';
 import { Col, Form } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'
+import { useHistory } from 'react-router-dom';
+import * as moment from 'moment'
 
 const ArrivalForm = (props) => {
-    const { title } = props.formInfo;
-    const [selectedDate,setSelectedDate] = useState(null)
+    const {key,title } = props.formInfo;
+    const [selectedFromDate,setSelectedFromDate] = useState(null);
+    const [selectedToDate,setSelectedToDate] = useState(null)
+    const history = useHistory();
+
+    const handleBookings = () =>{
+        const fromDate = moment(selectedFromDate).format('L');
+        const toDate = moment(selectedToDate).format('L')
+        history.push(`/booking?key=${key}&from=${fromDate}&to=${toDate}`)
+    }
+
     return (
         <Form>
             <Form.Group controlId="formGroupEmail">
@@ -20,9 +31,9 @@ const ArrivalForm = (props) => {
                 <Form.Group as={Col} controlId="formGridEmail">
                     <Form.Label style={{display: 'block'}}>From</Form.Label>
                     <DatePicker 
-                        selected={selectedDate}
-                        onChange={date => setSelectedDate(date)}
-                        dateFormat='dd/mm/yyyy'
+                        selected={selectedFromDate}
+                        onChange={date => setSelectedFromDate(date)}
+                        dateFormat='dd/MM/yyyy'
                         minDate={new Date()}
                     ></DatePicker>
                 </Form.Group> 
@@ -30,14 +41,15 @@ const ArrivalForm = (props) => {
                 <Form.Group as={Col} controlId="formGridPassword">
                     <Form.Label style={{display: 'block'}}>To</Form.Label>
                     <DatePicker 
-                        selected={selectedDate}
-                        onChange={date => setSelectedDate(date)}
-                        dateFormat='dd/mm/yyyy'
+                        selected={selectedToDate}
+                        onChange={date => setSelectedToDate(date)}
+                        dateFormat='dd/MM/yyyy'
+                        minDate={new Date()}
                     ></DatePicker>
                 </Form.Group>
             </Form.Row>
-
-            <button className="btn btn-warning w-100">Start Booking</button>
+            
+            <button className="btn btn-warning w-100" onClick={handleBookings}>Start Booking</button>
         </Form>
     );
 };

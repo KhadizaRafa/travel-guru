@@ -3,7 +3,7 @@ import { Col, Container, Form, Row } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import fakeData from '../../fakeData/destination'
 import ArrivalForm from '../ArrivalForm/ArrivalForm';
-import Destinations from '../Destinations/Destinations';
+
 const DestinationDetails = () => {
     const { destinationKey } = useParams();
     const destinationDetails = fakeData.find(dest => dest.key === destinationKey);
