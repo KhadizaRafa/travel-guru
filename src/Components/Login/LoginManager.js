@@ -7,6 +7,33 @@ export const firebaseInitialize = () => {
      firebase.initializeApp(firebaseConfig)
 }
 
+export const createUserWithEmailAndPassword = (fname,lname,email,password) =>{
+    return firebase.auth().createUserWithEmailAndPassword(email, password)
+    .then(response => {
+      console.log(response)
+      updateUserName(fname,lname);
+      return (true, '');  
+    })
+    .catch(function (error) {
+      // Handle Errors here.
+      var errorMessage = error.message;
+      return (false, errorMessage)
+    });
+  }
+
+  export const updateUserName = (fname,lname) => {
+    var user = firebase.auth().currentUser;
+
+    user.updateProfile({
+      displayName: fname+' '+lname
+     
+    }).then(function () {
+      console.log('User updated successfully')
+    }).catch(function (error) {
+      console.log(error)
+    });
+  }
+
 export const handleGoogleLogin = () => {
     const googleProvider = new firebase.auth.GoogleAuthProvider();
     return firebase.auth().signInWithPopup(googleProvider)
