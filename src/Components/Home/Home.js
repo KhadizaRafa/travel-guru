@@ -8,9 +8,9 @@ const Home = () => {
     const fakethreeData = fakeData.slice(0, 10);
     const [destinations, setDestinations] = useState(fakethreeData)
     return (
-        <Row>
+        <Row className="home">
             <Col md={5}>
-                <div className='p-5 ml-3'>
+                <div className='p-5 '>
                     <h1>COX'S BAZAR</h1>
                     <p>Cox's Bazar is a city, fishing port, tourism centre and district headquarters in southeastern Bangladesh</p>
                 </div> 
