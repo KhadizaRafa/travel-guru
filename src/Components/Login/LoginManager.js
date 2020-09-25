@@ -7,26 +7,64 @@ export const firebaseInitialize = () => {
      firebase.initializeApp(firebaseConfig)
 }
 
-export const createUserWithEmailAndPassword = (fname,lname,email,password) =>{
-    return firebase.auth().createUserWithEmailAndPassword(email, password)
+export const createUserWithEmailAndPassword = (user) =>{
+    return firebase.auth().createUserWithEmailAndPassword(user.email, user.password1)
     .then(response => {
-      console.log(response)
-      updateUserName(fname,lname);
-      return (true, '');  
+      updateUserName(user.fname,user.lname);
+      const singedInUser = {
+            isSignedIn: true,
+            name : user.name,
+            email: user.email,
+            password : user.password1,
+            success: true,
+            error:''
+        }
+    return singedInUser;
     })
     .catch(function (error) {
       // Handle Errors here.
       var errorMessage = error.message;
-      return (false, errorMessage)
+      const singedInUser = {
+        isSignedIn: false,
+        name : user.name,
+        email: user.email,
+        password : user.password1,
+        success: false,
+        error: errorMessage
+    }
+     return singedInUser;
+    });
+  }
+
+export const signInWithEmailAndPassword = (user)=>{
+    return firebase.auth().signInWithEmailAndPassword(user.email,user.password1)
+    .then((response) => {
+          const {email} = response.user
+          const singedInUser = {
+                isSignedIn: true,
+                email: email,
+                success: true,
+                error:''
+            }
+        return singedInUser;
+    })
+    .catch(function (error) {
+      var errorMessage = error.message;
+      const singedInUser = {
+                isSignedIn: false,
+                email: user.email,
+                success: false,
+                error:errorMessage
+            }
+      return singedInUser;
     });
   }
 
   export const updateUserName = (fname,lname) => {
     var user = firebase.auth().currentUser;
-
+    const userName = fname + ' ' + lname
     user.updateProfile({
-      displayName: fname+' '+lname
-     
+      displayName: userName
     }).then(function () {
       console.log('User updated successfully')
     }).catch(function (error) {
@@ -38,6 +76,7 @@ export const handleGoogleLogin = () => {
     const googleProvider = new firebase.auth.GoogleAuthProvider();
     return firebase.auth().signInWithPopup(googleProvider)
         .then(response =>{
+          
             const {displayName,photoURL,email} = response.user
             const singedInUser = {
                 isSignedIn: true,
@@ -86,3 +125,4 @@ export const handleFacebookLogin = () => {
         // ...
       });
 }
+

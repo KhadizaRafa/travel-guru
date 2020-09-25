@@ -7,6 +7,7 @@ import Login from './Components/Login/Login';
 import NotFound from './Components/NotFound/NotFound';
 import Booking from './Components/Booking/Booking';
 import PrivateRoute from './Components/PrivateRoute/PrivateRoute';
+import './App.css'
 
 export const UserContext = createContext();
 
@@ -16,7 +17,6 @@ function App() {
     <div className="App">
       <UserContext.Provider value={[loggedInUser,setLoggedInUser]}>
       <Router>
-        <h1>{loggedInUser.email}</h1>
         <Header></Header>
         <Switch>
         <Route exact path="/home">
@@ -31,9 +31,6 @@ function App() {
           <PrivateRoute path="/booking">
             <Booking/>
           </PrivateRoute>
-          {/* <Route path="/booking">
-            <Booking/>
-          </Route> */}
           <Route exact path="/">
             <Home />
           </Route>

@@ -1,0 +1,17 @@
+.box{
+    width: 200px;
+    height: 309px;
+    border-radius: 20px !important;
+    border: 2px solid rgb(190, 180, 156);
+}
+.card-img{
+    width: 100%;
+    box-sizing: content-box;
+}
+.box :hover{
+    border-radius: 16px !important;
+    border: 4px solid rgb(255, 214, 124);
+}
+.card-title :hover{
+    border: none !important;
+}

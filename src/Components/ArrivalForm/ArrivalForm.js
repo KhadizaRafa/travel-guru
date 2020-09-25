@@ -4,28 +4,29 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'
 import { useHistory } from 'react-router-dom';
 import * as moment from 'moment'
+import './ArrivalForm.css'
 
 const ArrivalForm = (props) => {
-    const {key,title } = props.formInfo;
+    const {key,title} = props.formInfo;
     const [selectedFromDate,setSelectedFromDate] = useState(null);
     const [selectedToDate,setSelectedToDate] = useState(null)
     const history = useHistory();
 
     const handleBookings = () =>{
+        
         const fromDate = moment(selectedFromDate).format('L');
         const toDate = moment(selectedToDate).format('L')
         history.push(`/booking?key=${key}&from=${fromDate}&to=${toDate}`)
     }
-
     return (
-        <Form>
+        <Form className="arrivalForm">
             <Form.Group controlId="formGroupEmail">
                 <Form.Label>Origin</Form.Label>
                 <Form.Control type="text" value="Dhaka" />
             </Form.Group>
             <Form.Group controlId="formGroupPassword">
                 <Form.Label>Destination</Form.Label>
-                <Form.Control type="text" value={title} />
+                <Form.Control type="text" defaultValue={title} />
             </Form.Group>
              <Form.Row className="d-flex">
                 <Form.Group as={Col} controlId="formGridEmail">
@@ -35,7 +36,10 @@ const ArrivalForm = (props) => {
                         onChange={date => setSelectedFromDate(date)}
                         dateFormat='dd/MM/yyyy'
                         minDate={new Date()}
-                    ></DatePicker>
+                        defaultValue={null}
+                        className="calendar"
+                    >
+                    </DatePicker>
                 </Form.Group> 
 
                 <Form.Group as={Col} controlId="formGridPassword">
@@ -45,6 +49,8 @@ const ArrivalForm = (props) => {
                         onChange={date => setSelectedToDate(date)}
                         dateFormat='dd/MM/yyyy'
                         minDate={new Date()}
+                        defaultValue={null}
+                        className="calendar"
                     ></DatePicker>
                 </Form.Group>
             </Form.Row>

@@ -1,0 +1,26 @@
+.userContainer{
+    border-radius:10px;
+    border : 1px solid black;
+    padding: 20px;
+}
+.loginOrRegisterText{
+    cursor: pointer;
+}
+.logo-img{
+    width:7%;
+    padding: 3px;
+}
+.social-icon{
+    border: 1px solid lightgray;
+    border-radius:30px;
+    background-color: white;
+    margin-top: 10px;
+    width: 50%;
+    margin-left: 25%;
+}
+
+.social-text{
+    padding-top: 2px;
+    display: inline;
+    color:grey;
+}

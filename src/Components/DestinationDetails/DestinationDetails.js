@@ -1,5 +1,5 @@
 import React from 'react';
-import { Col, Container, Form, Row } from 'react-bootstrap';
+import { Col, Container, Row } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import fakeData from '../../fakeData/destination'
 import ArrivalForm from '../ArrivalForm/ArrivalForm';
@@ -18,8 +18,6 @@ const DestinationDetails = () => {
                 <Col md={5}>
                     <ArrivalForm formInfo={destinationDetails} key={destinationKey}></ArrivalForm>
                 </Col>
-                {/* <Destinations destination={destinationDetails} key={destinationKey}></Destinations> */}
-                
             </Row>
         </Container>
       

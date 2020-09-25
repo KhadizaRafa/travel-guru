@@ -1,7 +1,7 @@
-body{
-    background-color: red;
+.navContainer{
+    background: transparent;
+    margin-bottom: 40px;
 }
-
 .logoImg > img{
     padding-left: 20px;
     padding-right: 50px;

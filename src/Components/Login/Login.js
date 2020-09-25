@@ -1,143 +1,207 @@
 import React, { useContext, useState } from "react";
 import { MDBContainer, MDBRow, MDBCol, MDBBtn, MDBInput } from 'mdbreact';
-import { Button } from "react-bootstrap";
-import {firebaseInitialize, handleFacebookLogin, handleGoogleLogin,createUserWithEmailAndPassword} from "./LoginManager"
+import { firebaseInitialize, handleFacebookLogin, handleGoogleLogin, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "./LoginManager"
 import { UserContext } from "../../App";
+import facebook from '../../resources/Icon/fb.png'
+import google from '../../resources/Icon/google.png'
 import { useHistory, useLocation } from "react-router-dom";
+import './Login.css'
 
 const Login = () => {
 
     let history = useHistory();
     let location = useLocation();
     let { from } = location.state || { from: { pathname: "/" } };
-    const [newUser, setNewUser] = useState(false)
+    const [existingUser, setExistingUser] = useState(true)
 
-    const [loggedInUser,setLoggedInUser] = useContext(UserContext)
-    const [validationError,setValidationError] = useState('')
-    const [userPassword, setUserPassword] = useState({
-        password1: '',
-        password2: ''
-    });
-    const [user,setUser] = useState({
-        isSignedIn: false,
-        firstName:'',
-        lastName:'',
-        name: '',
+    const [loggedInUser, setLoggedInUser] = useContext(UserContext)
+    const [validationError, setValidationError] = useState('')
+    const [isValid, setIsValid] = useState(true);
+    const [dummyUser, setDummyUser] = useState({
+        fname: '',
+        lname: '',
         email: '',
         password1: '',
-        password2: '',
+        password2: ''
+    })
+    const [user, setUser] = useState({
+        isSignedIn: false,
+        name: '',
+        email: '',
+        password: '',
         photo: '',
-        destination : ''
+        destination: '',
+        success: '',
+        error: ''
     })
 
-    const handleBlurChange = (e) => {
-        let isValid = true;
-        if (e.target.name === 'email') {
-          isValid = /\S+@\S+\.\S+/.test(e.target.value)? setValidationError(''):setValidationError('Please enter valid email address');
-        }
-        if (e.target.name === 'password1') {
-          const validPasswordLength = e.target.value.length > 6 ? 
-             setValidationError(''):setValidationError('Password length should not be less than 6 characters');
-          const validPassValue = /\d{1}/.test(e.target.value)? 
-            setValidationError(''):setValidationError('Please enter valid password');
-          
-           validPasswordLength && validPassValue? setUserPassword(e.target.value):setUserPassword('');
-           
-        }
-        if(e.target.name === 'password2')
-        {
-            (userPassword!=null && userPassword === e.target.value)?
-                isValid = true : isValid = false;
-            
-        }
-        if (isValid) {
-          let newUser = { ...user };
-          newUser[e.target.name] = e.target.value;
-          setUser(newUser);
-    
-        }
-      }
-
-    
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (newUser && user.email && user.password) {
-        createUserWithEmailAndPassword(user.fname,user.lname,user.email,user.password)
-        .then(response =>{
-            // handleUserState(response);
-            console.log(response)
-        })
+    const setDummyUserValue = (targetField, value) => {
+        let dUser = { ...dummyUser }
+        dUser[targetField] = value;
+        setDummyUser(dUser)
     }
-    // if (!newUser && user.email && user.password) {
-    //     signInWithEmailAndPassword(user.email,user.password)
-    //     .then(response =>{
-    //         handleUserState(response);
-    //     })
-    // }
 
-  }
-    
+    const handleBlurChange = (e) => {
+        if (e.target.name === 'fname' || e.target.name === 'lname') {
+           setIsValid(true);
+        }
+        if (e.target.name === 'email') {
+            const validEmail =  /\S+@\S+\.\S+/.test(e.target.value);
+            if (validEmail) {
+                setIsValid(true);
+                setValidationError('')
+            }
+            else {
+                setIsValid(false)
+                setValidationError('Please enter valid email address');
+            }
+        }
+        //password
+        else if (e.target.name === 'password1') {
+            const validPasswordLength = e.target.value.length > 6;
+            if (validPasswordLength) {
+                setValidationError('')
+            }
+            else {
+                setValidationError('Password length should not be less than 6 characters');
+                setIsValid(false)
+            }
+
+            if (validPasswordLength) {
+                const validPassValue = /\d{1}/.test(e.target.value);
+                validPassValue ? setValidationError('') : setValidationError('Please enter valid password');
+
+                setIsValid(validPasswordLength && validPassValue);
+
+            }
+        }
+        else if (e.target.name === 'password2') {
+            if (dummyUser.password1 === e.target.value) {
+                setValidationError('');
+            }
+            else {
+                setIsValid(false);
+                setValidationError('Password did not match');
+            }
+        }
+
+        if (isValid) {
+            setDummyUserValue(e.target.name, e.target.value)
+        }
+
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!existingUser && dummyUser.email && dummyUser.password1) {
+            createUserWithEmailAndPassword(dummyUser)
+                .then(response => {
+                    setUser(response);
+                    if (response.isSignedIn) {
+                        setLoggedInUser(response);
+                        history.replace(from);
+                    }
+                })
+        }
+        if (existingUser && dummyUser.email && dummyUser.password1) {
+            signInWithEmailAndPassword(dummyUser)
+                .then(response => {
+                    setUser(response);
+                    if (response.isSignedIn) {
+                        setLoggedInUser(response);
+                        history.replace(from);
+                    }
+                })
+        }
+
+    }
+
     firebaseInitialize();
 
-    const setUserInfoAndRedirect = (response)=>{
+    const setUserInfoAndRedirect = (response) => {
         setUser(response);
         setLoggedInUser(response);
         history.replace(from);
     }
 
-    const googleSignIn = ()=>{
+    const googleSignIn = () => {
         handleGoogleLogin()
-         .then(response =>{
-            setUserInfoAndRedirect(response);
-         })   
+            .then(response => {
+                setUserInfoAndRedirect(response);
+            })
     }
 
-    const facebookSignIn = ()=>{
+    const facebookSignIn = () => {
         handleFacebookLogin()
-         .then(response =>{
-            setUserInfoAndRedirect(response);
-         })
+            .then(response => {
+                setUserInfoAndRedirect(response);
+            })
     }
 
     return (
         <MDBContainer>
             <MDBRow className="justify-content-md-center">
-                <MDBCol md="6" style={{border: '1px solid black'}}>
-                {validationError && <p className="alert alert-danger m-3">{validationError}</p>}
-                {
-                    newUser?
+                <MDBCol md="5" className='userContainer'>
+                    {validationError && <p className="alert alert-danger m-3">{validationError}</p>}
+                    {
+                        user.success && <p style={{ color: "green" }} className="alert alert-danger m-3" > User successfully {!existingUser ? 'created' : 'Logged In'}</p>
+                    }
+                    {
+                        user.error && <p style={{ color: "red" }} className="alert alert-danger m-3">{user.error}</p>
+                    }
                     <form className="p-3" onSubmit={handleSubmit}>
-                        <p className="h5 mb-4">Create an account</p>
+                        {!existingUser ? <p className="h5 mb-4">Create an account</p> : <p className="h5 mb-4">Login</p>}
                         <div className="grey-text">
-                            <MDBInput onBlur={handleBlurChange} label="First Name" group type="text"  name='firstName' required />
-                            <MDBInput onBlur={handleBlurChange} label="Last Name" group type="text" name='lastName' required />
-                            <MDBInput onBlur={handleBlurChange} label="Username or Email"  group type="email"  name='email' required />
-                            <MDBInput onBlur={handleBlurChange} label="Password" group type="password" validate name='password1' required />
-                            <MDBInput onBlur={handleBlurChange} label="Confirm Password" group type="password" validate name='password2' required />
+                            {
+                                !existingUser && <MDBInput onBlur={handleBlurChange} label="First Name" name='fname' group type="text" required />
+                            }
+                            {
+                                !existingUser && <MDBInput onBlur={handleBlurChange} label="Last Name" name='lname' group type="text" required />
+                            }
+                            <MDBInput onBlur={handleBlurChange} label="Username or Email" name='email' group type="email" required />
+                            <MDBInput onBlur={handleBlurChange} label="Password" name='password1' group type="password" validate required />
+                            {
+                                (!existingUser) && <MDBInput onBlur={handleBlurChange} label="Confirm Password" name='password2' group type="password" validate required />
+                            }
                         </div>
-                        <div className="text-center">
-                            <MDBBtn type="submit" color="warning" className="w-100">Create an account</MDBBtn>
-                        </div>
-                        <p className="text-center">Already have an account? <strong className="text-warning" onClick={() => setNewUser(false)}>Login</strong></p>
+                        {
+
+                            <div className="text-center">
+                                <MDBBtn type="submit" color="warning" className="w-100">{!existingUser ? 'Create an account' : 'Login'}</MDBBtn >
+                                {
+                                    !existingUser ?
+                                        <small>Already have an account? <strong className="text-warning loginOrRegisterText" onClick={() => setExistingUser(true)}> Login</strong></small> :
+
+                                        <small>Don't have an account?<strong className="text-warning loginOrRegisterText" onClick={() => setExistingUser(false)}> Create a new account</strong></small>
+                                }
+                            </div>
+                        }
+
                     </form>
-                    :
-                    <form className="p-3" onSubmit={handleSubmit}>
-                        <p className="h5 mb-4">Login</p>
-                        <div className="grey-text">
-                            <MDBInput onBlur={handleBlurChange} label="Username or Email"  group type="email" name='email' required />
-                            <MDBInput onBlur={handleBlurChange} label="Password" group type="password" name='password1' required />
-                        </div>
-                        <div className="text-center">
-                            <MDBBtn type="submit" color="warning" className="w-100">Login</MDBBtn>
-                        </div>
-                        <p className="text-center">Don't have an account?
-                        <strong className="login-tag text-warning" onClick={() => setNewUser(true)}>Create a new account</strong></p>
-                    </form>
-                }
-                    <Button variant="outline-info" onClick={googleSignIn}>Login with Google</Button>
-                    <Button variant="outline-info" onClick={facebookSignIn}>Login with Facebook</Button>
                 </MDBCol>
             </MDBRow>
+            <div className="d-flex justify-content-center">
+                <div className="d-flex mt-3 col-md-6">
+                    <hr className="w-50 mr-2" />Or<hr className="w-50 ml-2" />
+                </div>
+            </div>
+            <div>
+                <button className="social-icon" onClick={googleSignIn}>
+                    <div className="d-flex">
+                        <img src={google} className="logo-img"></img>
+                        <p className="social-text col-md-10">Continue with Google</p>
+                    </div>
+                </button>
+                <br></br>
+                <button className="social-icon" onClick={facebookSignIn}>
+                    <div className="d-flex">
+                        <img src={facebook} className="logo-img"></img>
+                        <p className="social-text col-md-10">Continue with Facebook</p>
+                    </div>
+                </button>
+            </div>
+
+
         </MDBContainer>
     );
 };
