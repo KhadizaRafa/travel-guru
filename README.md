@@ -1,5 +1,4 @@
 Travel Guru - A website for travellers
-Visit [https://travel-guru-cel.web.app] Live Website
 
 Technology
 React
